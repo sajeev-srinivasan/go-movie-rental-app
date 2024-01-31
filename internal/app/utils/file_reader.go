@@ -11,6 +11,14 @@ type Config struct {
 		Port string `yaml:"port"`
 		Host string `yaml:"host"`
 	} `yaml:"server"`
+
+	Database struct {
+		Port     int    `yaml:"port"`
+		Host     string `yaml:"host"`
+		Name     int    `yaml:"name"`
+		User     string `yaml:"user"`
+		Password string `yaml:"password"`
+	} `yaml:"database"`
 }
 
 func GetConfig(cfg *Config) {
