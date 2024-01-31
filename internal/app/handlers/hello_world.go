@@ -6,5 +6,5 @@ import (
 )
 
 func GetHelloWorld(context *gin.Context) {
-	context.JSON(http.StatusOK, "Hello")
+	context.JSON(http.StatusOK, "Hello, World!")
 }
