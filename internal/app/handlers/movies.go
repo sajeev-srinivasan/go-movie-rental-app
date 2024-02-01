@@ -23,14 +23,19 @@ func (m movieHandler) GetMovies(ctx *gin.Context) {
 	movies, err := m.movieService.GetMovies()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.MovieResponse{
-			Status:  "error",
-			Message: err.Error(),
-			Data:    nil,
+			Response: model.Response{
+				Status:  "error",
+				Message: err.Error(),
+			},
+			Data: nil,
 		})
 	}
+
 	ctx.JSON(http.StatusOK, model.MovieResponse{
-		Status:  "success",
-		Message: "",
-		Data:    movies,
+		Response: model.Response{
+			Status:  "success",
+			Message: "",
+		},
+		Data: movies,
 	})
 }

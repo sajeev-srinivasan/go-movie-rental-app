@@ -21,7 +21,7 @@ func NewMovieRepository(DB *sql.DB) MovieRepository {
 
 func (m movieRepository) GetMovies() ([]model.Movie, error) {
 	var movies []model.Movie
-	rows, err := m.DB.Query("select id, title,year,genre,actors from movies")
+	rows, err := m.DB.Query("select id, title, year, genre, actors from movies")
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {

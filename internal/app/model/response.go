@@ -1,7 +1,11 @@
 package model
 
-type MovieResponse struct {
+type Response struct {
 	Status  string
 	Message string
-	Data    []Movie
+}
+
+type MovieResponse struct {
+	Response
+	Data []Movie
 }

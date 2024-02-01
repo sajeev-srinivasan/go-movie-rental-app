@@ -101,3 +101,33 @@ func TestShouldReturn500ResponseWhenInternalServerErrorOccurs(t *testing.T) {
 
 	movieRepository.AssertNumberOfCalls(t, "GetMovies", 1)
 }
+
+func TestShouldReturnMoviesWhenFilteringWithYear(t *testing.T) {
+	engine := gin.Default()
+
+	movieRepository := mocks.MovieRepository{}
+	movieService := service.NewMovieService(&movieRepository)
+	movieHandler := NewMovieHandler(movieService)
+
+	engine.GET("/movies", movieHandler.GetMovies)
+
+	movieRepository.On("GetMovies").Return([]model.Movie{
+		{Id: "movie2", Title: "Batman", Year: 2003, Genre: "Action", Actors: "Christian Bale"},
+	}, nil)
+	request, err := http.NewRequest(http.MethodGet, "/movies?year=2003", nil)
+	require.NoError(t, err)
+
+	responseRecorder := httptest.NewRecorder()
+	engine.ServeHTTP(responseRecorder, request)
+
+	var responseBody model.MovieResponse
+	fmt.Println(responseRecorder.Body)
+	err = json.NewDecoder(responseRecorder.Body).Decode(&responseBody)
+	fmt.Println("err", err)
+	require.NoError(t, err)
+
+	assert.Equal(t, http.StatusOK, responseRecorder.Code)
+	assert.Equal(t, "success", responseBody.Status)
+	assert.Equal(t, 1, len(responseBody.Data))
+	assert.Equal(t, "movie2", responseBody.Data[0].Id)
+}
