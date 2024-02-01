@@ -1,22 +1,31 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"movie-rental-app/internal/app/router"
-	"movie-rental-app/internal/app/utils"
+)
+
+var (
+	configKey     = "configFile"
+	defaultConfig = ""
+	configUsage   = "this is config file path"
 )
 
 func main() {
-	engine := gin.Default()
-	var config utils.Config
-	utils.GetConfig(&config)
+	//engine := gin.Default()
+	//var config config.Config
+	//config.GetConfig(&config)
+	//
+	//router.RegisterRoutes(engine, config)
+	//
+	//err := engine.Run(fmt.Sprint(config.Server.Host, ":", config.Server.Port))
+	//if err != nil {
+	//	return
+	//}
+	//println("Listening and serving at 8080")
 
-	router.RegisterRoutes(engine, config)
-
-	err := engine.Run(fmt.Sprint(config.Server.Host, ":", config.Server.Port))
-	if err != nil {
-		return
-	}
-	println("Listening and serving at 8080")
+	var config string
+	flag.StringVar(&config, configKey, defaultConfig, configUsage)
+	flag.Parse()
+	fmt.Println("flag", flag.Args()[0])
 }

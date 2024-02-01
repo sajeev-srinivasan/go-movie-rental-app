@@ -1,4 +1,4 @@
-package utils
+package config
 
 import (
 	"fmt"
@@ -15,14 +15,14 @@ type Config struct {
 	Database struct {
 		Port     int    `yaml:"port"`
 		Host     string `yaml:"host"`
-		Name     int    `yaml:"name"`
+		Name     string `yaml:"name"`
 		User     string `yaml:"user"`
 		Password string `yaml:"password"`
 	} `yaml:"database"`
 }
 
 func GetConfig(cfg *Config) {
-	f, err := os.Open("./configs/config.yaml")
+	f, err := os.Open("./setup/env/local.yaml")
 	if err != nil {
 		processError(err)
 	}

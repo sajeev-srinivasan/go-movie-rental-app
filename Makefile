@@ -1,14 +1,20 @@
 GO = go
 TARGET = movie-rental-app
-
+APP_EXECUTABLE = "./target/$(TARGET)"
+ENV = "local"
+CONFIG_FILE_PATH = "./setup/env/$(ENV).yaml"
+HTTP_SERVE = "http-serve"
 build:
-	$(GO) build -o ./target/$(TARGET) cmd/main.go
+	$(GO) build -o $(APP_EXECUTABLE) cmd/main.go
 
 run: build
-	./target/$(TARGET)
+	$(APP_EXECUTABLE)
 
 test:
 	$(GO) test ./...
 
 clean:
 	rm -f ./target/$(TARGET)
+
+http-serve: build
+	$(APP_EXECUTABLE) -configFile=$(CONFIG_FILE_PATH) $(HTTP_SERVE)

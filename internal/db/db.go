@@ -5,10 +5,10 @@ import (
 	"fmt"
 	_ "github.com/lib/pq"
 	"log"
-	"movie-rental-app/internal/app/utils"
+	"movie-rental-app/setup/config"
 )
 
-func CreateConnection(config utils.Config) *sql.DB {
+func CreateConnection(config config.Config) *sql.DB {
 	dataSourceName := fmt.Sprintf(
 		"postgres://%s:%d/%s?user=%s&password=%s&sslmode=disable",
 		config.Database.Host,
