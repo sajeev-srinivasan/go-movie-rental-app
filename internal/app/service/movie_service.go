@@ -18,6 +18,9 @@ func NewMovieService(movieRepository repository.MovieRepository) MovieService {
 }
 
 func (m movieService) GetMovies() ([]model.Movie, error) {
-	movies, _ := m.movieRepository.GetMovies()
+	movies, err := m.movieRepository.GetMovies()
+	if err != nil {
+		return []model.Movie{}, err
+	}
 	return movies, nil
 }

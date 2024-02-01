@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"movie-rental-app/internal/app/model"
 	"movie-rental-app/internal/app/service"
 	"net/http"
 )
@@ -19,6 +20,17 @@ func NewMovieHandler(movieService service.MovieService) MovieHandler {
 }
 
 func (m movieHandler) GetMovies(ctx *gin.Context) {
-	movies, _ := m.movieService.GetMovies()
-	ctx.JSON(http.StatusOK, movies)
+	movies, err := m.movieService.GetMovies()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, model.MovieResponse{
+			Status:  "error",
+			Message: err.Error(),
+			Data:    nil,
+		})
+	}
+	ctx.JSON(http.StatusOK, model.MovieResponse{
+		Status:  "success",
+		Message: "",
+		Data:    movies,
+	})
 }
