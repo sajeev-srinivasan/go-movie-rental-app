@@ -41,10 +41,10 @@ func initMigrations(file string) {
 	err = migrateInstance.Up()
 	if err != nil {
 		if errors.Is(err, migrate.ErrNoChange) {
-			println("No changes detected:", err)
+			println("No changes detected:", err.Error())
 			return
 		}
-		println("Not able to run migration:", err)
+		println("Not able to run migration:", err.Error())
 		return
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
 	"log"
 	"movie-rental-app/setup/config"
@@ -32,18 +33,22 @@ func CreateConnection(config config.Config) *sql.DB {
 
 func NewMigration(config config.Config) (*migrate.Migrate, error) {
 	dbConn := CreateConnection(config)
-
+	fmt.Println("after create conn")
 	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
+
 	if err != nil {
+		fmt.Println("WithInstance ->", err)
 		return nil, err
 	}
-
+	fmt.Println("after with instance")
 	migrateInstance, err := migrate.NewWithDatabaseInstance(
 		"file://internal/db/migration",
 		config.Database.Name,
 		driver)
 	if err != nil {
+		fmt.Println("NewWithDatabaseInstance ->", err)
 		return nil, err
 	}
+	fmt.Println("after NewWithDatabaseInstance  line 51")
 	return migrateInstance, nil
 }
