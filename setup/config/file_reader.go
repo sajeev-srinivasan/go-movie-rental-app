@@ -21,8 +21,8 @@ type Config struct {
 	} `yaml:"database"`
 }
 
-func GetConfig(cfg *Config) {
-	f, err := os.Open("./setup/env/local.yaml")
+func GetConfig(cfg *Config, configFilePath string) {
+	f, err := os.Open(configFilePath)
 	if err != nil {
 		processError(err)
 	}
