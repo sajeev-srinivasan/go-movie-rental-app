@@ -16,14 +16,14 @@ var dbContainer tc.Container
 
 func createPostgresContainer() (tc.Container, *sql.DB, error, context.Context) {
 	containerRequest := tc.ContainerRequest{
-		Image:        "postgres:14.8-alpine",
-		ExposedPorts: []string{"5432/tcp"},
+		Image:        "postgres:latest",
+		ExposedPorts: []string{"5432"},
 		Env: map[string]string{
-			"POSTGRES_USER":     "test_user",
-			"POSTGRES_PASSWORD": "test_password",
-			"POSTGRES_DB":       "test_movies",
+			"POSTGRES_USER":     "postgres",
+			"POSTGRES_PASSWORD": "postgres",
+			"POSTGRES_DB":       "testdb",
 		},
-		WaitingFor: wait.ForListeningPort("5432/tcp"),
+		WaitingFor: wait.ForListeningPort("5432"),
 	}
 
 	ctx := context.Background()
@@ -41,13 +41,16 @@ func createPostgresContainer() (tc.Container, *sql.DB, error, context.Context) {
 		return nil, nil, errors.New(fmt.Sprint("Error fetching host: ", err.Error())), ctx
 	}
 
+	if err != nil {
+		return nil, nil, err, nil
+	}
 	port, err := dbContainer.MappedPort(ctx, "5432")
 	if err != nil {
 		return nil, nil, errors.New(fmt.Sprint("Error fetching port: ", err.Error())), ctx
 	}
 
 	dataSourceName := makeDbUrl(host, port)
-
+	fmt.Println("dataSourceName", dataSourceName)
 	dbConn, err := sql.Open("postgres", dataSourceName)
 	if err != nil {
 		return nil, nil, errors.New(fmt.Sprint("Error while connecting to database: ", err.Error())), ctx
@@ -79,13 +82,6 @@ func terminateContainer(container tc.Container, ctx context.Context) {
 }
 
 func makeDbUrl(host string, port nat.Port) string {
-	dataSourceName := fmt.Sprintf(
-		"postgres://%s:%s/%s?user=%s&password=%s&sslmode=disable",
-		host,
-		port,
-		"test_movies",
-		"test_user",
-		"test_password",
-	)
-	return dataSourceName
+	dbURI := fmt.Sprintf("postgres://postgres:postgres@%v:%v/testdb?sslmode=disable", host, port.Port())
+	return dbURI
 }
