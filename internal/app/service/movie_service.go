@@ -6,7 +6,7 @@ import (
 )
 
 type MovieService interface {
-	GetMovies() ([]model.Movie, error)
+	GetMovies(year string, genre string, actors string) ([]model.Movie, error)
 }
 
 type movieService struct {
@@ -17,8 +17,16 @@ func NewMovieService(movieRepository repository.MovieRepository) MovieService {
 	return &movieService{movieRepository: movieRepository}
 }
 
-func (m movieService) GetMovies() ([]model.Movie, error) {
-	movies, err := m.movieRepository.GetMovies()
+func (m movieService) GetMovies(year string, genre string, actors string) ([]model.Movie, error) {
+	var (
+		movies []model.Movie
+		err    error
+	)
+	if year != "" || genre != "" || actors != "" {
+		movies, err = m.movieRepository.GetMovies(year, genre, actors)
+	} else {
+		movies, err = m.movieRepository.GetAllMovies()
+	}
 	if err != nil {
 		return []model.Movie{}, err
 	}

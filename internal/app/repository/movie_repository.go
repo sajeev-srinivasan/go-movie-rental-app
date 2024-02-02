@@ -8,7 +8,8 @@ import (
 )
 
 type MovieRepository interface {
-	GetMovies() ([]model.Movie, error)
+	GetMovies(year string, genre string, actors string) ([]model.Movie, error)
+	GetAllMovies() ([]model.Movie, error)
 }
 
 type movieRepository struct {
@@ -19,18 +20,33 @@ func NewMovieRepository(DB *sql.DB) MovieRepository {
 	return &movieRepository{DB: DB}
 }
 
-func (m movieRepository) GetMovies() ([]model.Movie, error) {
+func (m movieRepository) GetAllMovies() ([]model.Movie, error) {
 	var movies []model.Movie
-	rows, err := m.DB.Query("select id, title, year, genre, actors from movies")
+	rows, err := m.DB.Query("select * from movies")
+	if err != nil {
+		return []model.Movie{}, errors.New("unable to fetch data" + err.Error())
+	}
+	return executeQuery(rows, movies)
+}
+
+func (m movieRepository) GetMovies(year string, genre string, actors string) ([]model.Movie, error) {
+	var movies []model.Movie
+	q := fmt.Sprintf("select * from movies where year = %s or genre = '%s' or actors = '%s'", year, genre, actors)
+	fmt.Println("q-->", q)
+	rows, err := m.DB.Query(q)
+	if err != nil {
+		return []model.Movie{}, errors.New("unable to fetch data" + err.Error())
+	}
+	return executeQuery(rows, movies)
+}
+
+func executeQuery(rows *sql.Rows, movies []model.Movie) ([]model.Movie, error) {
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
 			fmt.Println("error while closing rows ->", err.Error())
 		}
 	}(rows)
-	if err != nil {
-		return []model.Movie{}, errors.New("unable to fetch data" + err.Error())
-	}
 
 	for rows.Next() {
 		var movie model.Movie

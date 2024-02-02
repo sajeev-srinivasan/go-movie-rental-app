@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"movie-rental-app/internal/app/model"
 	"movie-rental-app/internal/app/service"
@@ -20,7 +21,12 @@ func NewMovieHandler(movieService service.MovieService) MovieHandler {
 }
 
 func (m movieHandler) GetMovies(ctx *gin.Context) {
-	movies, err := m.movieService.GetMovies()
+	year, _ := ctx.GetQuery("year")
+	genre, _ := ctx.GetQuery("genre")
+	actors, _ := ctx.GetQuery("actors")
+	fmt.Println("---->", year, genre, actors)
+	movies, err := m.movieService.GetMovies(year, genre, actors)
+
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.MovieResponse{
 			Response: model.Response{
@@ -29,6 +35,7 @@ func (m movieHandler) GetMovies(ctx *gin.Context) {
 			},
 			Data: nil,
 		})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, model.MovieResponse{
