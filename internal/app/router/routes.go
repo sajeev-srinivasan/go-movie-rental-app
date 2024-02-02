@@ -1,18 +1,16 @@
 package router
 
 import (
+	"database/sql"
 	"github.com/gin-gonic/gin"
 	"movie-rental-app/internal/app/handlers"
 	"movie-rental-app/internal/app/repository"
 	"movie-rental-app/internal/app/service"
-	"movie-rental-app/internal/db"
-	"movie-rental-app/setup/config"
 	"net/http"
 )
 
-func RegisterRoutes(engine *gin.Engine, config config.Config) {
+func RegisterRoutes(engine *gin.Engine, dbConn *sql.DB) {
 
-	dbConn := db.CreateConnection(config)
 	movieRepository := repository.NewMovieRepository(dbConn)
 	movieService := service.NewMovieService(movieRepository)
 	movieHandler := handlers.NewMovieHandler(movieService)

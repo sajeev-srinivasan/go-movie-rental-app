@@ -53,7 +53,8 @@ func initHttpServer(file string) {
 	engine := gin.Default()
 	var configs config.Config
 	config.GetConfig(&configs, file)
-	router.RegisterRoutes(engine, configs)
+	dbConn := db.CreateConnection(configs)
+	router.RegisterRoutes(engine, dbConn)
 	err := engine.Run(fmt.Sprint(configs.Server.Host, ":", configs.Server.Port))
 	if err != nil {
 		return

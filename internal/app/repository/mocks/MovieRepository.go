@@ -13,12 +13,12 @@ type MovieRepository struct {
 	mock.Mock
 }
 
-// GetMovies provides a mock function with given fields:
-func (_m *MovieRepository) GetMovies() ([]model.Movie, error) {
+// GetAllMovies provides a mock function with given fields:
+func (_m *MovieRepository) GetAllMovies() ([]model.Movie, error) {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetMovies")
+		panic("no return value specified for GetAllMovies")
 	}
 
 	var r0 []model.Movie
@@ -36,6 +36,36 @@ func (_m *MovieRepository) GetMovies() ([]model.Movie, error) {
 
 	if rf, ok := ret.Get(1).(func() error); ok {
 		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetMovies provides a mock function with given fields: year, genre, actors
+func (_m *MovieRepository) GetMovies(year string, genre string, actors string) ([]model.Movie, error) {
+	ret := _m.Called(year, genre, actors)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetMovies")
+	}
+
+	var r0 []model.Movie
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string, string) ([]model.Movie, error)); ok {
+		return rf(year, genre, actors)
+	}
+	if rf, ok := ret.Get(0).(func(string, string, string) []model.Movie); ok {
+		r0 = rf(year, genre, actors)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]model.Movie)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string, string, string) error); ok {
+		r1 = rf(year, genre, actors)
 	} else {
 		r1 = ret.Error(1)
 	}

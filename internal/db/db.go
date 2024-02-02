@@ -33,10 +33,10 @@ func CreateConnection(config config.Config) *sql.DB {
 
 func NewMigration(config config.Config) (*migrate.Migrate, error) {
 	dbConn := CreateConnection(config)
-	return GetMigration(config.Database.Name, dbConn)
+	return GetMigration(config.Database.Name, dbConn, config)
 }
 
-func GetMigration(dbName string, dbConn *sql.DB) (*migrate.Migrate, error) {
+func GetMigration(dbName string, dbConn *sql.DB, config config.Config) (*migrate.Migrate, error) {
 	fmt.Println("after create conn")
 	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
 
@@ -46,7 +46,7 @@ func GetMigration(dbName string, dbConn *sql.DB) (*migrate.Migrate, error) {
 	}
 	fmt.Println("after with instance")
 	migrateInstance, err := migrate.NewWithDatabaseInstance(
-		"file://internal/db/migration",
+		"file://"+config.Database.Migrationpath,
 		dbName,
 		driver)
 	if err != nil {

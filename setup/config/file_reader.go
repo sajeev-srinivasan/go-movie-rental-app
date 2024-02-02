@@ -13,11 +13,12 @@ type Config struct {
 	} `yaml:"server"`
 
 	Database struct {
-		Port     int    `yaml:"port"`
-		Host     string `yaml:"host"`
-		Name     string `yaml:"name"`
-		User     string `yaml:"user"`
-		Password string `yaml:"password"`
+		Port          int    `yaml:"port"`
+		Host          string `yaml:"host"`
+		Name          string `yaml:"name"`
+		User          string `yaml:"user"`
+		Password      string `yaml:"password"`
+		Migrationpath string `yaml:"migrationpath"`
 	} `yaml:"database"`
 }
 

@@ -1,0 +1,2 @@
+database:
+  migrationpath: "../../internal/db/migration"

@@ -22,7 +22,7 @@ func TestShouldReturn200ResponseWithMovieListWhenFetchingAllMovies(t *testing.T)
 	movieHandler := NewMovieHandler(movieService)
 	engine.GET("/movies", movieHandler.GetMovies)
 
-	movieRepository.On("GetMovies").Return([]model.Movie{
+	movieRepository.On("GetAllMovies").Return([]model.Movie{
 		{Id: "movie1", Title: "Harry Potter", Year: 2001, Genre: "Adventure", Actors: "Daniel Radcliff"},
 		{Id: "movie2", Title: "Batman", Year: 2003, Genre: "Action", Actors: "Christian Bale"},
 	}, nil)
@@ -43,7 +43,7 @@ func TestShouldReturn200ResponseWithMovieListWhenFetchingAllMovies(t *testing.T)
 	assert.Equal(t, "movie1", responseBody.Data[0].Id)
 	assert.Equal(t, "movie2", responseBody.Data[1].Id)
 
-	movieRepository.AssertNumberOfCalls(t, "GetMovies", 1)
+	movieRepository.AssertNumberOfCalls(t, "GetAllMovies", 1)
 
 }
 
@@ -54,7 +54,7 @@ func TestShouldReturn200ResponseWithEmptyListWhenFetchingAllMovies(t *testing.T)
 	movieHandler := NewMovieHandler(movieService)
 	engine.GET("/movies", movieHandler.GetMovies)
 
-	movieRepository.On("GetMovies").Return([]model.Movie{}, nil)
+	movieRepository.On("GetAllMovies").Return([]model.Movie{}, nil)
 	request, err := http.NewRequest(http.MethodGet, "/movies", nil)
 	require.NoError(t, err)
 
@@ -71,7 +71,7 @@ func TestShouldReturn200ResponseWithEmptyListWhenFetchingAllMovies(t *testing.T)
 	assert.Equal(t, 0, len(responseBody.Data))
 	assert.Equal(t, []model.Movie{}, responseBody.Data)
 
-	movieRepository.AssertNumberOfCalls(t, "GetMovies", 1)
+	movieRepository.AssertNumberOfCalls(t, "GetAllMovies", 1)
 }
 
 func TestShouldReturn500ResponseWhenInternalServerErrorOccurs(t *testing.T) {
@@ -83,7 +83,7 @@ func TestShouldReturn500ResponseWhenInternalServerErrorOccurs(t *testing.T) {
 
 	engine.GET("/movies", movieHandler.GetMovies)
 
-	movieRepository.On("GetMovies").Return([]model.Movie{}, errors.New("unable to connect to database"))
+	movieRepository.On("GetAllMovies").Return([]model.Movie{}, errors.New("unable to connect to database"))
 	request, err := http.NewRequest(http.MethodGet, "/movies", nil)
 	require.NoError(t, err)
 
@@ -99,7 +99,7 @@ func TestShouldReturn500ResponseWhenInternalServerErrorOccurs(t *testing.T) {
 	assert.Equal(t, "error", responseBody.Status)
 	assert.Equal(t, "unable to connect to database", responseBody.Message)
 
-	movieRepository.AssertNumberOfCalls(t, "GetMovies", 1)
+	movieRepository.AssertNumberOfCalls(t, "GetAllMovies", 1)
 }
 
 func TestShouldReturnMoviesWhenFilteringWithYear(t *testing.T) {
@@ -111,7 +111,7 @@ func TestShouldReturnMoviesWhenFilteringWithYear(t *testing.T) {
 
 	engine.GET("/movies", movieHandler.GetMovies)
 
-	movieRepository.On("GetMovies").Return([]model.Movie{
+	movieRepository.On("GetMovies", "2003", "", "").Return([]model.Movie{
 		{Id: "movie2", Title: "Batman", Year: 2003, Genre: "Action", Actors: "Christian Bale"},
 	}, nil)
 	request, err := http.NewRequest(http.MethodGet, "/movies?year=2003", nil)
