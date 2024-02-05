@@ -182,7 +182,7 @@ func TestShouldReturn404ResponseWhenMovieIsNotAvailable(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, http.StatusNotFound, responseRecorder.Code)
-	assert.Equal(t, "no such movie is Available", responseBody.Message)
+	assert.Equal(t, "no such movie is available", responseBody.Message)
 
 	movieRepository.AssertNumberOfCalls(t, "GetMovie", 1)
 }
