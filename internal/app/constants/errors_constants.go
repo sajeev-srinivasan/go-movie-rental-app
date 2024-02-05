@@ -2,4 +2,4 @@ package constants
 
 import "errors"
 
-var ErrNoSuchMovie = errors.New("no such movie is Available")
+var ErrNoSuchMovie = errors.New("no such movie is available")
