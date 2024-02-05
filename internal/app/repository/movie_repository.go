@@ -10,6 +10,7 @@ import (
 type MovieRepository interface {
 	GetMovies(year string, genre string, actors string) ([]model.Movie, error)
 	GetAllMovies() ([]model.Movie, error)
+	GetMovie(id string) (model.Movie, error)
 }
 
 type movieRepository struct {
@@ -38,6 +39,16 @@ func (m movieRepository) GetMovies(year string, genre string, actors string) ([]
 		return []model.Movie{}, errors.New("unable to fetch data" + err.Error())
 	}
 	return executeQuery(rows, movies)
+}
+
+func (m movieRepository) GetMovie(id string) (model.Movie, error) {
+	var movie model.Movie
+	row := m.DB.QueryRow("select * from movies where id=$1", id)
+	if err := row.Scan(&movie.Id, &movie.Title, &movie.Year, &movie.Genre, &movie.Actors); err != nil {
+		fmt.Println("error in fetching data ow", err.Error())
+		return model.Movie{}, err
+	}
+	return movie, nil
 }
 
 func executeQuery(rows *sql.Rows, movies []model.Movie) ([]model.Movie, error) {

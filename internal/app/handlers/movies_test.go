@@ -131,3 +131,58 @@ func TestShouldReturnMoviesWhenFilteringWithYear(t *testing.T) {
 	assert.Equal(t, 1, len(responseBody.Data))
 	assert.Equal(t, "movie2", responseBody.Data[0].Id)
 }
+
+func TestShouldReturn200ResponseWhenFetchingMovieWithId(t *testing.T) {
+	engine := gin.Default()
+
+	movieRepository := mocks.MovieRepository{}
+	movieService := service.NewMovieService(&movieRepository)
+	movieHandler := NewMovieHandler(movieService)
+	engine.GET("/movies/:movieId", movieHandler.GetMovie)
+
+	movieRepository.On("GetMovie", "movie1").Return(
+		model.Movie{
+			Id: "movie1", Title: "Harry Potter", Year: 2001, Genre: "Adventure", Actors: "Daniel Radcliff",
+		}, nil)
+
+	request, err := http.NewRequest(http.MethodGet, "/movies/movie1", nil)
+	require.NoError(t, err)
+
+	responseRecorder := httptest.NewRecorder()
+	engine.ServeHTTP(responseRecorder, request)
+
+	var responseBody model.Movie
+	err = json.NewDecoder(responseRecorder.Body).Decode(&responseBody)
+	require.NoError(t, err)
+
+	assert.Equal(t, http.StatusOK, responseRecorder.Code)
+	assert.Equal(t, "movie1", responseBody.Id)
+
+	movieRepository.AssertNumberOfCalls(t, "GetMovie", 1)
+}
+
+func TestShouldReturn404ResponseWhenMovieIsNotAvailable(t *testing.T) {
+	engine := gin.Default()
+
+	movieRepository := mocks.MovieRepository{}
+	movieService := service.NewMovieService(&movieRepository)
+	movieHandler := NewMovieHandler(movieService)
+	engine.GET("/movies/:movieId", movieHandler.GetMovie)
+
+	movieRepository.On("GetMovie", "movie3").Return(model.Movie{}, errors.New("sql: no rows in result set"))
+
+	request, err := http.NewRequest(http.MethodGet, "/movies/movie3", nil)
+	require.NoError(t, err)
+
+	responseRecorder := httptest.NewRecorder()
+	engine.ServeHTTP(responseRecorder, request)
+
+	var responseBody model.ErrorResponse
+	err = json.NewDecoder(responseRecorder.Body).Decode(&responseBody)
+	require.NoError(t, err)
+
+	assert.Equal(t, http.StatusNotFound, responseRecorder.Code)
+	assert.Equal(t, "no such movie is Available", responseBody.Message)
+
+	movieRepository.AssertNumberOfCalls(t, "GetMovie", 1)
+}

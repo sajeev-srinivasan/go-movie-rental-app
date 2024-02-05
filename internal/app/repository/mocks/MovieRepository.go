@@ -43,6 +43,34 @@ func (_m *MovieRepository) GetAllMovies() ([]model.Movie, error) {
 	return r0, r1
 }
 
+// GetMovie provides a mock function with given fields: id
+func (_m *MovieRepository) GetMovie(id string) (model.Movie, error) {
+	ret := _m.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetMovie")
+	}
+
+	var r0 model.Movie
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (model.Movie, error)); ok {
+		return rf(id)
+	}
+	if rf, ok := ret.Get(0).(func(string) model.Movie); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Get(0).(model.Movie)
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetMovies provides a mock function with given fields: year, genre, actors
 func (_m *MovieRepository) GetMovies(year string, genre string, actors string) ([]model.Movie, error) {
 	ret := _m.Called(year, genre, actors)

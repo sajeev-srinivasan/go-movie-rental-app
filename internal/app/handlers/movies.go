@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"movie-rental-app/internal/app/constants"
 	"movie-rental-app/internal/app/model"
 	"movie-rental-app/internal/app/service"
 	"net/http"
@@ -10,6 +12,7 @@ import (
 
 type MovieHandler interface {
 	GetMovies(ctx *gin.Context)
+	GetMovie(ctx *gin.Context)
 }
 
 type movieHandler struct {
@@ -45,4 +48,16 @@ func (m movieHandler) GetMovies(ctx *gin.Context) {
 		},
 		Data: movies,
 	})
+}
+
+func (m movieHandler) GetMovie(context *gin.Context) {
+	movieId := context.Param("movieId")
+	movie, err := m.movieService.GetMovie(movieId)
+	if err != nil {
+		if errors.Is(err, constants.ErrNoSuchMovie) {
+			context.JSON(http.StatusNotFound, model.ErrorResponse{Message: err.Error()})
+			return
+		}
+	}
+	context.JSON(http.StatusOK, movie)
 }

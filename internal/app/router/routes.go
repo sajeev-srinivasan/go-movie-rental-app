@@ -20,5 +20,6 @@ func RegisterRoutes(engine *gin.Engine, dbConn *sql.DB) {
 			context.JSON(http.StatusOK, "Hello, World!")
 		})
 		movieGroup.GET("/movies", movieHandler.GetMovies)
+		movieGroup.GET("/movies/:movieId", movieHandler.GetMovie)
 	}
 }
