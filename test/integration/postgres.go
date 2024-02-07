@@ -10,12 +10,11 @@ import (
 	tc "github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 	db2 "movie-rental-app/internal/db"
-	"movie-rental-app/setup/config"
 )
 
 var dbContainer tc.Container
 
-func createPostgresContainer(configs config.Config) (tc.Container, *sql.DB, error, context.Context) {
+func createPostgresContainer(path string) (tc.Container, *sql.DB, error, context.Context) {
 	containerRequest := tc.ContainerRequest{
 		Image:        "postgres:latest",
 		ExposedPorts: []string{"5432"},
@@ -57,7 +56,7 @@ func createPostgresContainer(configs config.Config) (tc.Container, *sql.DB, erro
 		return nil, nil, errors.New(fmt.Sprint("Error while connecting to database: ", err.Error())), ctx
 	}
 
-	migration, err := db2.GetMigration("test_movies", dbConn, configs)
+	migration, err := db2.GetMigration("test_movies", dbConn, path)
 	if err != nil {
 		return nil, nil, errors.New(fmt.Sprint("Error while creating migration instance: ", err.Error())), ctx
 	}

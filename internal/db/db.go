@@ -11,14 +11,14 @@ import (
 	"movie-rental-app/setup/config"
 )
 
-func CreateConnection(config config.Config) *sql.DB {
+func CreateConnection(config config.DatabaseConfigs) *sql.DB {
 	dataSourceName := fmt.Sprintf(
 		"postgres://%s:%d/%s?user=%s&password=%s&sslmode=disable",
-		config.Database.Host,
-		config.Database.Port,
-		config.Database.Name,
-		config.Database.User,
-		config.Database.Password,
+		config.Host,
+		config.Port,
+		config.DatabaseName,
+		config.User,
+		config.Password,
 	)
 
 	dbConn, err := sql.Open("postgres", dataSourceName)
@@ -31,12 +31,12 @@ func CreateConnection(config config.Config) *sql.DB {
 	return dbConn
 }
 
-func NewMigration(config config.Config) (*migrate.Migrate, error) {
-	dbConn := CreateConnection(config)
-	return GetMigration(config.Database.Name, dbConn, config)
+func NewMigration(dbConfig config.DatabaseConfigs, migrationConfigs config.MigrationConfigs) (*migrate.Migrate, error) {
+	dbConn := CreateConnection(dbConfig)
+	return GetMigration(dbConfig.DatabaseName, dbConn, migrationConfigs.DevPath)
 }
 
-func GetMigration(dbName string, dbConn *sql.DB, config config.Config) (*migrate.Migrate, error) {
+func GetMigration(dbName string, dbConn *sql.DB, path string) (*migrate.Migrate, error) {
 	fmt.Println("after create conn")
 	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
 
@@ -46,7 +46,7 @@ func GetMigration(dbName string, dbConn *sql.DB, config config.Config) (*migrate
 	}
 	fmt.Println("after with instance")
 	migrateInstance, err := migrate.NewWithDatabaseInstance(
-		"file://"+config.Database.Migrationpath,
+		"file://"+path,
 		dbName,
 		driver)
 	if err != nil {

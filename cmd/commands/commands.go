@@ -31,9 +31,10 @@ func commands() map[string]func(configFile string) {
 }
 
 func initMigrations(file string) {
-	var configs config.Config
-	config.GetConfig(&configs, file)
-	migrateInstance, err := db.NewMigration(configs)
+	configs := config.InitConfigs(file)
+	databaseConfigs := configs.GetDatabaseConfigs()
+	migrationConfigs := configs.GetMigrationConfigs()
+	migrateInstance, err := db.NewMigration(databaseConfigs, migrationConfigs)
 	if err != nil {
 		println("error in fetching migration instance:", err)
 		return
@@ -50,12 +51,13 @@ func initMigrations(file string) {
 }
 
 func initHttpServer(file string) {
+	configs := config.InitConfigs(file)
+	serverConfigs := configs.GetServerConfigs()
+	databaseConfigs := configs.GetDatabaseConfigs()
 	engine := gin.Default()
-	var configs config.Config
-	config.GetConfig(&configs, file)
-	dbConn := db.CreateConnection(configs)
+	dbConn := db.CreateConnection(databaseConfigs)
 	router.RegisterRoutes(engine, dbConn)
-	err := engine.Run(fmt.Sprint(configs.Server.Host, ":", configs.Server.Port))
+	err := engine.Run(fmt.Sprint(serverConfigs.Host, ":", serverConfigs.Port))
 	if err != nil {
 		return
 	}

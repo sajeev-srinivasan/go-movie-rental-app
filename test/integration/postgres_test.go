@@ -22,11 +22,11 @@ var db *sql.DB
 var container tc.Container
 var err error
 var ctx context.Context
-var configs config.Config
 
 func TestMain(m *testing.M) {
-	config.GetConfig(&configs, "../../setup/env/inttest.yaml")
-	container, db, err, ctx = createPostgresContainer(configs)
+	configs := config.InitConfigs("../../setup/env/local.yaml")
+	migrationConfigs := configs.GetMigrationConfigs()
+	container, db, err, ctx = createPostgresContainer(migrationConfigs.TestPath)
 	if err != nil {
 		return
 	}
